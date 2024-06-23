@@ -32,7 +32,7 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
 	})
-
+	clog.Printf("Created User: %v\n Name: %s \n", user.ID, user.Name)
 	respondWithJSON(w, http.StatusOK, dbToUser(user))
 }
 
@@ -46,6 +46,7 @@ func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
 		clog.Printf("Failed to get user by ApiKey")
 		respondWIthError(w, http.StatusUnauthorized, "failed to auth api")
 	}
+	clog.Printf("Getting user info successful by ID:%s", user.ID)
 	respondWithJSON(w, http.StatusFound, user)
 
 }

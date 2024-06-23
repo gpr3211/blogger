@@ -2,14 +2,17 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
+
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
 
-	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 type apiConfig struct {
@@ -49,6 +52,8 @@ func main() {
 		Handler: mux,
 	}
 	clog.Printf("Serving files from %s on port: %s", filepathRoot, port)
+	fmt.Println("Starting server..")
+	fmt.Printf("Serving files on port %s", port)
 	log.Fatal(srv.ListenAndServe())
 
 }
