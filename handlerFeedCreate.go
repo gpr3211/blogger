@@ -1,7 +1,6 @@
 package main
 
 import (
-	//	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -12,31 +11,31 @@ import (
 	"github.com/gpr3211/blogger/internal/database"
 )
 
-func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) {
+func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, user database.User) {
 	if r.Method != http.MethodPost {
 		respondWIthError(w, http.StatusNotAcceptable, ("Get method not allowed on path"))
 	}
+
 	type parameters struct {
 		Name string
+		URL  string
 	}
+
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		clog.C.Printf("error decoding json body")
 	}
-	user, err := cfg.DB.CrateUser(r.Context(), database.CrateUserParams{
+	feed, err := cfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        uuid.New(),
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
+		Url:       params.URL,
+		UserID:    user.ID,
 	})
-	clog.Printf("Created User: %v\n Name: %s \n", user.ID, user.Name)
-	respondWithJSON(w, http.StatusOK, dbToUser(user))
-}
-
-func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
-	clog.Printf("Successfuly fetched data for user %v", user)
-	respondWithJSON(w, http.StatusFound, dbToUser(user))
+	clog.Printf("Successfully created Feed for User: %v\nName: %s\nUrl: %s\n", feed.UserID, feed.Name, feed.Url)
+	respondWithJSON(w, 200, dbToFeed(feed))
 
 }

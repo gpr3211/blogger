@@ -47,6 +47,7 @@ func main() {
 	mux.HandleFunc("GET /blog/v1/users", cfg.middlewareAuth(cfg.handlerGetUser))
 	mux.HandleFunc("GET /blog/v1/healthz", cfg.handleReady)
 	mux.HandleFunc("GET /blog/v1/err", cfg.handleError)
+	mux.HandleFunc("POST /blog/v1/feeds", cfg.middlewareAuth(cfg.handlerFeedCreate))
 	srv := http.Server{
 		Addr:    ":" + port,
 		Handler: mux,
