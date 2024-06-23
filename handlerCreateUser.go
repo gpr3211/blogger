@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gpr3211/blogger/internal/auth"
+	//	"github.com/gpr3211/blogger/internal/auth"
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
 )
@@ -36,17 +36,8 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 	respondWithJSON(w, http.StatusOK, dbToUser(user))
 }
 
-func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
-	head, err := auth.GetApiHead(r.Header)
-	if err != nil {
-		return
-	}
-	user, err := cfg.DB.GetUserByAPIKey(r.Context(), head)
-	if err != nil {
-		clog.Printf("Failed to get user by ApiKey")
-		respondWIthError(w, http.StatusUnauthorized, "failed to auth api")
-	}
-	clog.Printf("Getting user info successful by ID:%s", user.ID)
+func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request, user database.User) {
+	clog.Printf("Successfuly fetched data for user %v", user)
 	respondWithJSON(w, http.StatusFound, user)
 
 }
