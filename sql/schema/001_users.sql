@@ -1,6 +1,6 @@
 -- +goose Up
 
-CREATE TABLE user (
+CREATE TABLE users (
     id UUID PRIMARY KEY,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -8,3 +8,5 @@ CREATE TABLE user (
 );
 
 -- +goose Down
+
+DROP TABLE users;
