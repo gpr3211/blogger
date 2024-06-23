@@ -7,7 +7,7 @@ package database
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -16,13 +16,13 @@ const crateUser = `-- name: CrateUser :one
 
 INSERT INTO users (id, created_at, updated_at, name)
 VALUES($1,$2,$3,$4)
-    RETURNING id, created_at, updated_at, name
+    RETURNING id, created_at, updated_at, name, apikey
 `
 
 type CrateUserParams struct {
 	ID        uuid.UUID
-	CreatedAt sql.NullTime
-	UpdatedAt sql.NullTime
+	CreatedAt time.Time
+	UpdatedAt time.Time
 	Name      string
 }
 
@@ -39,6 +39,7 @@ func (q *Queries) CrateUser(ctx context.Context, arg CrateUserParams) (User, err
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
+		&i.Apikey,
 	)
 	return i, err
 }
