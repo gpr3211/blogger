@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/google/uuid"
+	//	"github.com/gpr3211/blogger/internal/auth"
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
 	"net/http"
@@ -30,11 +31,20 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 		Name:      params.Name,
 	})
 
-	respondWithJSON(w, http.StatusOK, user)
+	respondWithJSON(w, http.StatusOK, dbToUser(user))
 }
 
 /*
+func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
+	head, err := auth.GetApiHead(r.Header)
+	if err != nil {
+		return
+	}
+//	token := cfg.DB.GetUserByAPIKey(r.Context(), head)
+}
 
 
 
- */
+
+
+*/

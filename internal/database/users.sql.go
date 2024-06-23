@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,9 +15,9 @@ import (
 
 const crateUser = `-- name: CrateUser :one
 
-INSERT INTO users (id, created_at, updated_at, name)
-VALUES($1,$2,$3,$4)
-    RETURNING id, created_at, updated_at, name, apikey
+INSERT INTO users (id, created_at, updated_at, name,api_key)
+VALUES($1,$2,$3,$4,encode(sha256(random()::text::bytea),'hex'))
+    RETURNING id, created_at, updated_at, name, api_key
 `
 
 type CrateUserParams struct {
@@ -39,7 +40,24 @@ func (q *Queries) CrateUser(ctx context.Context, arg CrateUserParams) (User, err
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Name,
-		&i.Apikey,
+		&i.ApiKey,
+	)
+	return i, err
+}
+
+const getUserByAPIKey = `-- name: GetUserByAPIKey :one
+SELECT id, created_at, updated_at, name, api_key FROM users WHERE api_key = $1
+`
+
+func (q *Queries) GetUserByAPIKey(ctx context.Context, apiKey sql.NullString) (User, error) {
+	row := q.db.QueryRowContext(ctx, getUserByAPIKey, apiKey)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Name,
+		&i.ApiKey,
 	)
 	return i, err
 }

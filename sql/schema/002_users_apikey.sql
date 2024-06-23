@@ -1,7 +1,7 @@
 -- +goose Up
 
 ALTER TABLE users
-ADD apikey VARCHAR(64) UNIQUE DEFAULT encode(sha256(random()::text::bytea), 'hex');
+ADD api_key VARCHAR(64) UNIQUE DEFAULT encode(sha256(random()::text::bytea), 'hex');
 
 -- +goose Down
 
