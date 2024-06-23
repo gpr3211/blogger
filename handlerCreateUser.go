@@ -1,13 +1,15 @@
 package main
 
 import (
+	//	"database/sql"
 	"encoding/json"
-	"github.com/google/uuid"
-	//	"github.com/gpr3211/blogger/internal/auth"
-	"github.com/gpr3211/blogger/internal/clog"
-	"github.com/gpr3211/blogger/internal/database"
 	"net/http"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/gpr3211/blogger/internal/auth"
+	"github.com/gpr3211/blogger/internal/clog"
+	"github.com/gpr3211/blogger/internal/database"
 )
 
 type parameters struct {
@@ -34,17 +36,16 @@ func (cfg *apiConfig) handlerCreateUser(w http.ResponseWriter, r *http.Request) 
 	respondWithJSON(w, http.StatusOK, dbToUser(user))
 }
 
-/*
 func (cfg *apiConfig) handlerGetUser(w http.ResponseWriter, r *http.Request) {
 	head, err := auth.GetApiHead(r.Header)
 	if err != nil {
 		return
 	}
-//	token := cfg.DB.GetUserByAPIKey(r.Context(), head)
+	user, err := cfg.DB.GetUserByAPIKey(r.Context(), head)
+	if err != nil {
+		clog.Printf("Failed to get user by ApiKey")
+		respondWIthError(w, http.StatusUnauthorized, "failed to auth api")
+	}
+	respondWithJSON(w, http.StatusFound, user)
+
 }
-
-
-
-
-
-*/

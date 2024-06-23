@@ -34,7 +34,6 @@ func main() {
 		clog.Printf("oops\n")
 	}
 	dbQueries := database.New(db)
-
 	cfg := apiConfig{
 		DB:             dbQueries,
 		fileServerHits: 0,
@@ -42,15 +41,14 @@ func main() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("POST /blog/v1/users", cfg.handlerCreateUser)
-	//mux.HandleFunc("GET /blog/v1/users")
-
+	mux.HandleFunc("GET /blog/v1/users", cfg.handlerGetUser)
 	mux.HandleFunc("GET /blog/v1/healthz", cfg.handleReady)
 	mux.HandleFunc("GET /blog/v1/err", cfg.handleError)
 	srv := http.Server{
 		Addr:    ":" + port,
 		Handler: mux,
 	}
-	log.Printf("Serving files from %s on port: %s", filepathRoot, port)
+	clog.Printf("Serving files from %s on port: %s", filepathRoot, port)
 	log.Fatal(srv.ListenAndServe())
 
 }

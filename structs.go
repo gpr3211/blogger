@@ -21,7 +21,7 @@ func dbToUser(user database.User) User {
 		CreatedAt: user.CreatedAt,
 		UpdatedAt: user.UpdatedAt,
 		Name:      user.Name,
-		ApiKey:    user.ApiKey.String,
+		ApiKey:    user.ApiKey,
 	}
 
 }
