@@ -42,12 +42,17 @@ func main() {
 		fileServerHits: 0,
 	}
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("POST /blog/v1/users", cfg.handlerCreateUser)
-	mux.HandleFunc("GET /blog/v1/users", cfg.middlewareAuth(cfg.handlerGetUser))
+	//	METRICS
 	mux.HandleFunc("GET /blog/v1/healthz", cfg.handleReady)
 	mux.HandleFunc("GET /blog/v1/err", cfg.handleError)
+	// USERS
+	mux.HandleFunc("POST /blog/v1/users", cfg.handlerCreateUser)
+	mux.HandleFunc("GET /blog/v1/users", cfg.middlewareAuth(cfg.handlerGetUser))
+	// FEEDS
+
 	mux.HandleFunc("POST /blog/v1/feeds", cfg.middlewareAuth(cfg.handlerFeedCreate))
+	//	mux.HandleFunc("GET /blog/v1/feeds", cfg.middlewareAuth(cfg.handlerFeedGetAll))
+
 	srv := http.Server{
 		Addr:    ":" + port,
 		Handler: mux,
