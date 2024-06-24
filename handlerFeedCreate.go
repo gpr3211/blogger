@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
+	//	"github.com/google/uuid"
 	//	"github.com/gpr3211/blogger/internal/auth"
+	"github.com/google/uuid"
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
 )
@@ -14,13 +15,13 @@ import (
 func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, user database.User) {
 	if r.Method != http.MethodPost {
 		respondWIthError(w, http.StatusNotAcceptable, ("Get method not allowed on path"))
+		return
 	}
 
 	type parameters struct {
 		Name string
 		URL  string
 	}
-
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)
@@ -35,6 +36,11 @@ func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, 
 		Url:       params.URL,
 		UserID:    user.ID,
 	})
+	if err != nil {
+		clog.Printf("failed to create feed %v", err)
+		respondWIthError(w, http.StatusNotImplemented, "Feed not created")
+		return
+	}
 	clog.Printf("Successfully created Feed for User: %v\nName: %s\nUrl: %s\n", feed.UserID, feed.Name, feed.Url)
 	respondWithJSON(w, 200, dbToFeed(feed))
 

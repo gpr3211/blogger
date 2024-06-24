@@ -8,6 +8,35 @@ import (
 	"github.com/gpr3211/blogger/internal/database"
 )
 
+// FOLLOWS
+type Follow struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	FeedId    uuid.UUID `json:"feed_id"`
+	UserId    uuid.UUID `json:"user_id"`
+}
+
+func dbToFollow(follow database.Follow) Follow {
+	return Follow{
+		ID:        follow.ID,
+		CreatedAt: follow.CreatedAt,
+		UpdatedAt: follow.UpdatedAt,
+		FeedId:    follow.FeedID,
+		UserId:    follow.UserID,
+	}
+}
+
+func FollowToFollows(follows []database.Follow) []Follow {
+	results := make([]Follow, len(follows))
+	for i, follow := range follows {
+		results[i] = dbToFollow(follow)
+	}
+	return results
+}
+
+// FEEEEEEDS
+
 type Feed struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
@@ -34,6 +63,8 @@ func FeedToFeeds(feeds []database.Feed) []Feed {
 	}
 	return results
 }
+
+// USERS
 
 type User struct {
 	ID        uuid.UUID `json:"id"`
