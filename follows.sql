@@ -7,3 +7,7 @@ VALUES($1,$2,$3,$4,$5);
 -- name DeleteFollow :one
 
 DELETE FROM follows WHERE (user_id = $1 AND feed_id = $2); 
+
+-- name GetAllFollows :many
+
+SELECT * FROM follows WHERE user_id = $1;

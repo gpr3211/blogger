@@ -40,3 +40,45 @@ func (cfg *apiConfig) handlerFollowCreate(w http.ResponseWriter, r *http.Request
 	respondWithJSON(w, 200, dbToFollow(follow))
 	clog.Printf("Follow successfuly created for User: %s\n Follow: %s", follow.UserID, params.Feed_id)
 }
+
+func (cfg *apiConfig) handlerFollowRemove(w http.ResponseWriter, r *http.Request, users database.User) {
+
+	if r.Method != http.MethodDelete {
+		respondWIthError(w, http.StatusNotAcceptable, ("Get method not allowed on path"))
+	}
+
+	FoId := (r.PathValue("Follow_id"))
+	fooId, err := uuid.Parse(FoId)
+	if err != nil {
+		respondWIthError(w, http.StatusNotFound, "couldnt not delete")
+		return
+
+	}
+	err = cfg.DB.DeleteFollow(r.Context(), database.DeleteFollowParams{
+		UserID: users.ID,
+		FeedID: fooId,
+	})
+	if err != nil {
+		clog.Printf("Error Removing follow for User: %v\n Feed: %v\n", users.ID, fooId)
+		respondWIthError(w, http.StatusNotFound, "couldnt not delete")
+		return
+	}
+	clog.Printf("Feed Removed \n# %s\n", fooId)
+	respondWIthError(w, 200, "Feed Deleted")
+
+}
+
+func (cfg *apiConfig) handlerFollowsGET(w http.ResponseWriter, r *http.Request, users database.User) {
+
+	if r.Method != http.MethodGet {
+		respondWIthError(w, http.StatusNotAcceptable, ("Get method not allowed on path"))
+		return
+	}
+	folw, err := cfg.DB.GetFollowsAll(r.Context(), users.ID)
+	if err != nil {
+		respondWIthError(w, http.StatusNotFound, "not found")
+	}
+	clog.Printf("Sucess\nFetched all follows for user: %v", users.ID)
+	respondWithJSON(w, 200, FollowToFollows(folw))
+
+}
