@@ -39,3 +39,14 @@ func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, 
 	respondWithJSON(w, 200, dbToFeed(feed))
 
 }
+
+func (cfg *apiConfig) handlerFeedsGet(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		respondWIthError(w, http.StatusNotAcceptable, ("Get method not allowed on path"))
+	}
+	datt, err := cfg.DB.GetAllFeeds(r.Context())
+	if err != nil {
+		respondWIthError(w, 404, "nah")
+	}
+	respondWithJSON(w, 200, FeedToFeeds(datt))
+}
