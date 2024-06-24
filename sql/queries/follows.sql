@@ -6,7 +6,7 @@ VALUES ($1,$2,$3,$4,$5)
 
 -- name: DeleteFollow :exec
 
-DELETE FROM follows Where (feed_id = $1) AND (user_id=$2);
+DELETE FROM follows Where (id = $1);
 
 
 -- name: GetFollowsAll :many

@@ -54,14 +54,11 @@ func (cfg *apiConfig) handlerFollowRemove(w http.ResponseWriter, r *http.Request
 		return
 
 	}
-	err = cfg.DB.DeleteFollow(r.Context(), database.DeleteFollowParams{
-		UserID: users.ID,
-		FeedID: fooId,
-	})
+	err = cfg.DB.DeleteFollow(r.Context(), fooId)
 	if err != nil {
-		clog.Printf("Error Removing follow for User: %v\n Feed: %v\n", users.ID, fooId)
-		respondWIthError(w, http.StatusNotFound, "couldnt not delete")
-		return
+		clog.Printf("failed to remove follow\n")
+		respondWIthError(w, http.StatusNotModified, "failed to remove follow")
+
 	}
 	clog.Printf("Feed Removed \n# %s\n", fooId)
 	respondWIthError(w, 200, "Feed Deleted")
