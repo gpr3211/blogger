@@ -22,14 +22,20 @@ func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, 
 		Name string
 		URL  string
 	}
+	type response struct {
+		Feed   Feed   `json:"feed"`
+		Follow Follow `json:"feed_follow"`
+	}
 	decoder := json.NewDecoder(r.Body)
 	params := parameters{}
 	err := decoder.Decode(&params)
 	if err != nil {
 		clog.C.Printf("error decoding json body")
 	}
+	fuuid := uuid.New()
+	// FEED CREATE
 	feed, err := cfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
-		ID:        uuid.New(),
+		ID:        fuuid,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
 		Name:      params.Name,
@@ -41,8 +47,27 @@ func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, 
 		respondWIthError(w, http.StatusNotImplemented, "Feed not created")
 		return
 	}
+	// AUTO FOLLOW BY USER
+	follow, err := cfg.DB.CreateFollow(r.Context(), database.CreateFollowParams{
+		ID:        uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID:    user.ID,
+		FeedID:    fuuid,
+	})
+
+	if err != nil {
+		clog.Printf("follow not created for user %v\n", follow.UserID)
+		respondWIthError(w, http.StatusNotModified, "Follow not created")
+
+	}
+	res := response{
+		Feed:   dbToFeed(feed),
+		Follow: dbToFollow(follow),
+	}
+
 	clog.Printf("Successfully created Feed for User: %v\nName: %s\nUrl: %s\n", feed.UserID, feed.Name, feed.Url)
-	respondWithJSON(w, 200, dbToFeed(feed))
+	respondWithJSON(w, 200, res)
 
 }
 
