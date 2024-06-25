@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"time"
@@ -33,11 +34,13 @@ func (cfg *apiConfig) handlerFeedCreate(w http.ResponseWriter, r *http.Request, 
 		clog.C.Printf("error decoding json body")
 	}
 	fuuid := uuid.New()
+
 	// FEED CREATE
 	feed, err := cfg.DB.CreateFeed(r.Context(), database.CreateFeedParams{
 		ID:        fuuid,
 		CreatedAt: time.Now().UTC(),
 		UpdatedAt: time.Now().UTC(),
+		LastFetch: sql.NullTime{},
 		Name:      params.Name,
 		Url:       params.URL,
 		UserID:    user.ID,

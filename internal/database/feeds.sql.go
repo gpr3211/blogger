@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -14,9 +15,9 @@ import (
 
 const createFeed = `-- name: CreateFeed :one
 
-INSERT INTO feeds (id,created_at,updated_at,name,url,user_id)
-VALUES($1,$2,$3,$4,$5,$6)
-    RETURNING id, created_at, updated_at, name, url, user_id
+INSERT INTO feeds (id,created_at,updated_at,name,url,user_id,last_fetch)
+VALUES($1,$2,$3,$4,$5,$6,$7)
+    RETURNING id, created_at, updated_at, name, url, user_id, last_fetch
 `
 
 type CreateFeedParams struct {
@@ -26,6 +27,7 @@ type CreateFeedParams struct {
 	Name      string
 	Url       string
 	UserID    uuid.UUID
+	LastFetch sql.NullTime
 }
 
 func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, error) {
@@ -36,6 +38,7 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 		arg.Name,
 		arg.Url,
 		arg.UserID,
+		arg.LastFetch,
 	)
 	var i Feed
 	err := row.Scan(
@@ -45,12 +48,13 @@ func (q *Queries) CreateFeed(ctx context.Context, arg CreateFeedParams) (Feed, e
 		&i.Name,
 		&i.Url,
 		&i.UserID,
+		&i.LastFetch,
 	)
 	return i, err
 }
 
 const getAllFeeds = `-- name: GetAllFeeds :many
-SELECT id, created_at, updated_at, name, url, user_id FROM feeds
+SELECT id, created_at, updated_at, name, url, user_id, last_fetch FROM feeds
 `
 
 func (q *Queries) GetAllFeeds(ctx context.Context) ([]Feed, error) {
@@ -69,6 +73,7 @@ func (q *Queries) GetAllFeeds(ctx context.Context) ([]Feed, error) {
 			&i.Name,
 			&i.Url,
 			&i.UserID,
+			&i.LastFetch,
 		); err != nil {
 			return nil, err
 		}

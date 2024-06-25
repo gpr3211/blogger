@@ -41,15 +41,18 @@ type Feed struct {
 	ID        uuid.UUID `json:"id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+	FetchedAt time.Time `json:"last_fetch"`
 	Name      string    `json:"name"`
 	Url       string    `json:"url"`
 	UserId    uuid.UUID `json:"user_id"`
 }
 
 func dbToFeed(feed database.Feed) Feed {
+
 	return Feed{
 		ID:        feed.ID,
 		CreatedAt: feed.CreatedAt,
+		FetchedAt: feed.LastFetch.Time,
 		UpdatedAt: feed.UpdatedAt,
 		Name:      feed.Name,
 		Url:       feed.Url,
