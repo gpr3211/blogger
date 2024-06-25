@@ -7,3 +7,14 @@ VALUES($1,$2,$3,$4,$5,$6,$7)
 -- name: GetAllFeeds :many
 SELECT * FROM feeds;
 
+-- name: MakeFetchList :many
+
+SELECT * from feeds
+    ORDER BY last_fetch LIMIT 1;
+
+
+-- name: MarkFeedFetched :one
+
+UPDATE feeds
+SET last_fetch = NOW(), updated_at = now() WHERE id = $1
+RETURNING *;
