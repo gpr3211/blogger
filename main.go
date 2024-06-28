@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"time"
 
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
@@ -24,6 +25,7 @@ type apiConfig struct {
 func main() {
 	const filepathRoot = "."
 	// LOAD envi
+
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("error loading env")
@@ -64,6 +66,9 @@ func main() {
 	clog.Printf("Serving files from %s on port: %s", filepathRoot, port)
 	fmt.Println("Starting server..")
 	fmt.Printf("Serving files on port %s", port)
+	dat_ass := database.New(db)
+	go startScrapeWorker(dat_ass, 10, time.Minute)
+
 	log.Fatal(srv.ListenAndServe())
 
 }

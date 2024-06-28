@@ -91,11 +91,11 @@ func (q *Queries) GetAllFeeds(ctx context.Context) ([]Feed, error) {
 const makeFetchList = `-- name: MakeFetchList :many
 
 SELECT id, created_at, updated_at, name, url, user_id, last_fetch from feeds
-    ORDER BY last_fetch LIMIT 1
+    ORDER BY last_fetch LIMIT $1
 `
 
-func (q *Queries) MakeFetchList(ctx context.Context) ([]Feed, error) {
-	rows, err := q.db.QueryContext(ctx, makeFetchList)
+func (q *Queries) MakeFetchList(ctx context.Context, limit int32) ([]Feed, error) {
+	rows, err := q.db.QueryContext(ctx, makeFetchList, limit)
 	if err != nil {
 		return nil, err
 	}

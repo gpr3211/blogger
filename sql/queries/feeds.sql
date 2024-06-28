@@ -10,7 +10,7 @@ SELECT * FROM feeds;
 -- name: MakeFetchList :many
 
 SELECT * from feeds
-    ORDER BY last_fetch LIMIT 1;
+    ORDER BY last_fetch LIMIT $1;
 
 
 -- name: MarkFeedFetched :one
@@ -18,3 +18,12 @@ SELECT * from feeds
 UPDATE feeds
 SET last_fetch = NOW(), updated_at = now() WHERE id = $1
 RETURNING *;
+
+
+/*
+-- name: CreateFeed :one
+-- name: GetAllFeeds :many
+-- name: MakeFetchList :many
+-- name: MarkFeedFetched :one
+
+*/
