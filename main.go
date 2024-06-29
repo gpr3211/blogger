@@ -50,6 +50,8 @@ func main() {
 	// USERS
 	mux.HandleFunc("POST /blog/v1/users", cfg.handlerCreateUser)
 	mux.HandleFunc("GET /blog/v1/users", cfg.middlewareAuth(cfg.handlerGetUser))
+	// User Posts
+	mux.HandleFunc("GET /blog/v1/posts/{limit}", cfg.middlewareAuth(cfg.handlerGetPostsUser))
 	// FEEDS
 
 	mux.HandleFunc("POST /blog/v1/feeds", cfg.middlewareAuth(cfg.handlerFeedCreate))

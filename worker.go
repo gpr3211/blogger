@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"log"
 	"time"
 
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/gpr3211/blogger/internal/clog"
 	"github.com/gpr3211/blogger/internal/database"
 )
@@ -54,9 +56,38 @@ func scrapeFeed(db *database.Queries, wg *sync.WaitGroup, feed database.Feed) {
 		return
 	}
 	for _, item := range rssFeed.Channel.Item {
-		clog.Print("Found post", item.Title)
-		return
+		description := sql.NullString{}
+		if item.Description != "" {
+			description.String = item.Description
+			description.Valid = true
+
+		} else {
+			clog.Println("Empty item description")
+			return
+		}
+
+		pubic, err := time.Parse(time.RFC1123Z, item.PubDate)
+		if err != nil {
+			clog.Println("failed parse of post string to time")
+			return
+		}
+
+		_, err = db.CreatePost(context.Background(), database.CreatePostParams{
+			ID:          uuid.New(),
+			CreatedAt:   time.Now(),
+			UpdatedAt:   time.Now(),
+			Title:       item.Title,
+			Url:         item.Link,
+			Description: item.Description,
+			PublishedAt: pubic,
+			FeedID:      feed.ID,
+		})
+		if err != nil {
+			clog.Printf("Failed to write post to DB\n,")
+			return
+		}
+		clog.Printf("post fetched")
 	}
 	log.Printf("Feed %s collected, %v posts,\n", feed.Name, len(rssFeed.Channel.Item))
-
+	return
 }

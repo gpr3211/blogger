@@ -2,6 +2,7 @@ package main
 
 import (
 	//	"net/http"
+	//	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -85,5 +86,42 @@ func dbToUser(user database.User) User {
 		Name:      user.Name,
 		ApiKey:    user.ApiKey,
 	}
+
+}
+
+type Post struct {
+	ID        uuid.UUID `json:"id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+	Title     string    `json:"title"`
+	Url       string    `json:"url"`
+	// use *string. In case of null it will marshal to JSON properly "
+	Description *string   `json:"description"`
+	PublishedAt time.Time `json:"published_at"`
+	FeedID      uuid.UUID `json:"feed_id"`
+}
+
+func dbtoPost(post database.Post) Post {
+
+	return Post{
+		ID:          post.ID,
+		CreatedAt:   post.CreatedAt,
+		UpdatedAt:   post.UpdatedAt,
+		Title:       post.Title,
+		Url:         post.Url,
+		Description: &post.Description,
+		PublishedAt: post.PublishedAt,
+		FeedID:      post.FeedID,
+	}
+}
+
+func dbToPosttoPosts(dbPosts []database.Post) []Post {
+	data := []Post{}
+
+	for _, dbPost := range dbPosts {
+		data = append(data, dbtoPost(dbPost))
+
+	}
+	return data
 
 }
